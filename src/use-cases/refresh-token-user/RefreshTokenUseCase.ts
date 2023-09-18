@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { prisma } from "../../prisma/client";
 
 export class RefreshTokenUseCase {
@@ -8,6 +9,16 @@ export class RefreshTokenUseCase {
       }
     })
 
+    const refreshTokenExpired = dayjs().isAfter(dayjs.unix(refreshToken?.expiresIn!))
+    if(refreshTokenExpired) {
+      await prisma.refreshToken.deleteMany({
+        where: {
+          userId: refreshToken?.userId
+        }
+      })
+
+      throw new Error('Token expired.')
+    }
     if(!refreshToken) {
       throw new Error('Refresh token invalid.')
     }

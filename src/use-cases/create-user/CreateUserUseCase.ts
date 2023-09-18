@@ -31,7 +31,6 @@ export class CreateUserUseCase {
         password: passordHash
       }
     })
-    console.log(user)
 
     return { user }
   }
